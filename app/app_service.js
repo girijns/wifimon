@@ -4,19 +4,6 @@ module.exports = {
   getClientData, getSystemData
 };
 
-function getClientData(res) {
-  axios.get(cfg.refreshurl)
-  .then(function (response) {
-    getClientList(res);
-  })
-  .catch(function (error) {
-    // handle error
-    console.log(error);
-    res.render("pages/error", {err : error.data});
-  });
-
-}
-
 function getSystemData(res) {
   axios.get(cfg.systemurl)
   .then(function (response) {
@@ -66,7 +53,7 @@ function parseSystemInfo(sysData) {
    return sysInfoNew;
 }
 
-function getClientList(res) {
+function getClientData(res) {
   axios.get(cfg.clientlisturl)
   .then(function (response) {
     const arr = response.data.replace(/\r\n/g,'\n').split('\n');
