@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% include ../partials/head %>
+</head>
+<body>
+<% include ../partials/header %>
+<main class="container-fluid">
+  <div class="jumbotron text-white bg-secondary" style="margin-left:-20px;
+ margin-right:-20px; margin-bottom: 0">
+  <h2>WiFi System status </h2>
+  <table class="table table-responsive">
+    <% for (var key in sysInfo) {
+    if (sysInfo.hasOwnProperty(key)) { %>
+        <tr class="text-white" style="background-color: rgba(0, 0, 0, 0.2);">
+        <td style="color: rgba(212, 175, 55, 0.8);"><%= key %></td><td><%= sysInfo[key] %></td>
+        </tr>
+    <%}
+    }%>
+  </table>
+</div>
+</main>
+<footer>
+    <% include ../partials/footer %>
+</footer>
+</body>
+</html>
