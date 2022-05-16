@@ -11,7 +11,7 @@
   <h2>WiFi Clients - <%= clients[0].ssid %> - <%= clients.length %> </h2>
   <table class="table table-responsive">
     <tr class="bg-dark text-white">
-            <th>#</th><th>Name</th><th>Band-Channel</th><th>RSSI</th><th>Negotiated(Kbps)</th><th>IP Address</th><th>MAC</th>
+            <th>#</th><th>Name</th><th>Band-Channel</th><th>RSSI</th><th>Negotiated(Mbps)</th><th>IP Address</th><th>MAC</th>
     </tr>
     <% for (var i = 0; i < clients.length; i++) {
        if(clients[i].rssi < 35) {  %>

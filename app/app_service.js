@@ -1,5 +1,6 @@
 const axios = require('axios');
-const cfg = require('../config/app_cfg')
+const cfg = require('../config/app_cfg');
+const jsdom = require('jsdom');
 module.exports = {
   getClientData, getSystemData
 };
@@ -18,6 +19,57 @@ function getSystemData(res) {
 
 }
 
+function getGatewayData(res,clients) {
+  axios.get(cfg.gatewayurl)
+  .then(function (response) {
+      var gtInfo = parseGatewayInfo(response.data);
+      for(let c of clients) {
+        if(c.ip == "Unknown") {
+          var rec = gtInfo[c.mac.toLowerCase()];
+          if(rec) {
+             c.ip = rec.ip;
+          }
+        }
+        if(c.name.includes(":") || c.name == "Unknown") {
+                  var rec = gtInfo[c.mac.toLowerCase()];
+                  if(rec) {
+                     c.name = rec.name;
+                  }
+                }
+      };
+      res.render("pages/wificlients", {clients : clients});
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+      res.render("pages/error", {err : error.data});
+    });
+}
+
+function parseGatewayInfo(data) {
+   var info = {};
+   var dom = new jsdom.JSDOM(data);
+   var tableRows = dom.window.document.querySelectorAll("table tr");
+   var rec;
+   for (var i=0; i<tableRows.length; i++) {
+      if(tableRows[i].querySelector('th') != null && tableRows[i].querySelector('th').textContent == "MAC Address") {
+         if(rec != null) {
+            info[rec.macAddress] = rec;
+         }
+         rec = {};
+         rec["macAddress"] = tableRows[i].querySelector('td').textContent.trim();
+      } else {
+         if(tableRows[i].querySelector('th') != null && tableRows[i].querySelector('th').textContent == "IPv4 Address / Name") {
+           var ipnm = tableRows[i].querySelector('td').textContent.trim().replace(/\n/g,'').split("/");
+           rec["ip"] = ipnm[0].trim();
+           rec["name"]= ipnm[1].trim();
+         }
+      }
+   }
+   info[rec.macAddress] =  rec;
+   return info;
+}
+
 function parseSystemInfo(sysData) {
    var sysInfo = {};
    const arr = sysData.replace(/\r\n/g,'\n').split('\n');
@@ -31,7 +83,7 @@ function parseSystemInfo(sysData) {
        continue;
      }
      if(found) {
-       if(i.includes("var wire_repeater_enable =0;")) {
+       if(i.includes("var wire_repeater_enable =1;")) {
           break;
        }
        for(let p of pars) {
@@ -77,7 +129,7 @@ function getClientData(res) {
         clients.push({ sernum: Number(vals[0])+1, mac: vals[1].length == 2 ? "Unknown" : vals[1], ip : vals[2].length == 2 ? "Unknown" : vals[2], 
         name: vals[3].length == 2 ? "Unknown" : vals[3], ssid: vals[4], bandchan: vals[5], rssi: vals[6], linkspeed: vals[7]});
     }
-    res.render("pages/wificlients", {clients : clients});
+    getGatewayData(res,clients);
   })
   .catch(function (error) {
     // handle error
