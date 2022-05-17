@@ -24,12 +24,12 @@ function getGatewayData(res,clients) {
   .then(function (response) {
       var gtInfo = parseGatewayInfo(response.data);
       for(let c of clients) {
-        if(c.ip == "Unknown") {
+        //if(c.ip == "Unknown") {
           var rec = gtInfo[c.mac.toLowerCase()];
           if(rec) {
              c.ip = rec.ip;
           }
-        }
+        //}
         if(c.name.includes(":") || c.name == "Unknown") {
                   var rec = gtInfo[c.mac.toLowerCase()];
                   if(rec) {
