@@ -83,7 +83,7 @@ function parseSystemInfo(sysData) {
        continue;
      }
      if(found) {
-       if(i.includes("var wire_repeater_enable =1;")) {
+       if(i.includes("var wire_repeater_enable =0;")) {
           break;
        }
        for(let p of pars) {
